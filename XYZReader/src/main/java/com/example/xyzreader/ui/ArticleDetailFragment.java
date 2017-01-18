@@ -19,8 +19,10 @@ import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -106,7 +108,15 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar_1);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Navigation up button
+        ImageButton imageButton = (ImageButton) mRootView.findViewById(R.id.arrow_up);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+            }
+        });
 
         collapsingToolbar =
                 (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar_layout);
@@ -238,5 +248,16 @@ public class ArticleDetailFragment extends Fragment implements
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         bindViews();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                ((AppCompatActivity)getActivity()).onSupportNavigateUp();
+                return(true);
+        }
+
+        return(super.onOptionsItemSelected(item));
     }
 }
