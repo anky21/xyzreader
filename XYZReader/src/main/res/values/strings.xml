@@ -8,5 +8,6 @@
     <string name="action_share">Share</string>
 
     <string name="up">Up</string>
+    <string name="network_down_message">Please refresh later when network is available. </string>
 
 </resources>
