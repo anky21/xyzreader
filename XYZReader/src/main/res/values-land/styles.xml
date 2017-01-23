@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <style name="ExpandedToolbarTitle" parent="@style/TextAppearance.AppCompat.Headline">
+        <item name="android:textSize">34sp</item>
+    </style>
+
+</resources>
