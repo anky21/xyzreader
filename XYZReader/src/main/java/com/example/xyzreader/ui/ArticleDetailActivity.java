@@ -3,6 +3,7 @@ package com.example.xyzreader.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +32,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     private long mSelectedItemId;
     private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;
     private int mTopInset;
+    private int mPosition;
 
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
@@ -84,19 +86,15 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        mCursor = cursor;
+        mPagerAdapter.notifyDataSetChanged();
 
         // Select the start ID
         if (mStartId > 0) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                if (cursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = cursor.getPosition();
-                    mCursor = cursor;
-                    mPagerAdapter.notifyDataSetChanged();
-                    mPager.setCurrentItem(position, false);
-                    break;
-                }
-                cursor.moveToNext();
+            Intent intent = getIntent();
+            if(intent.hasExtra(ArticleListActivity.STARTING_ARTICLE_POSITION)){
+                mPosition = intent.getIntExtra(ArticleListActivity.STARTING_ARTICLE_POSITION, 0);
+                mPager.setCurrentItem(mPosition, false);
             }
         }
     }

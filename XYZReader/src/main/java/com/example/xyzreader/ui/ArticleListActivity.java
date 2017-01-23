@@ -39,6 +39,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    static final String STARTING_ARTICLE_POSITION = "starting_article_position";
+    private int mPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +130,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public long getItemId(int position) {
             mCursor.moveToPosition(position);
+            mPosition = position;
             return mCursor.getLong(ArticleLoader.Query._ID);
         }
 
@@ -138,8 +141,10 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
+                    intent.putExtra(STARTING_ARTICLE_POSITION, mPosition);
+                    startActivity(intent);
                 }
             });
             return vh;
