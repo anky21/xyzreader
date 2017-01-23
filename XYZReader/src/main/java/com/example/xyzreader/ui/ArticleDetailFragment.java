@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -139,23 +138,7 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-        bindViews();
-        updateStatusBar();
         return mRootView;
-    }
-
-    private void updateStatusBar() {
-        int color = 0;
-        if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
-            float f = progress(mScrollY,
-                    mStatusBarFullOpacityBottom - mTopInset * 3,
-                    mStatusBarFullOpacityBottom - mTopInset);
-            color = Color.argb((int) (255 * f),
-                    (int) (Color.red(mMutedColor) * 0.9),
-                    (int) (Color.green(mMutedColor) * 0.9),
-                    (int) (Color.blue(mMutedColor) * 0.9));
-        }
-        mStatusBarColorDrawable.setColor(color);
     }
 
     static float progress(float v, float min, float max) {
@@ -257,7 +240,6 @@ public class ArticleDetailFragment extends Fragment implements
                     mPhotoView.setImageBitmap(bitmap);
                     mRootView.findViewById(R.id.meta_bar)
                             .setBackgroundColor(mMutedColor);
-                    updateStatusBar();
                 }
             }
 
