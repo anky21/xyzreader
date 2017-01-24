@@ -136,6 +136,11 @@ public class ArticleDetailFragment extends Fragment implements
                 } else if (scrollY < oldScrollY) {
                     fab.show();
                 }
+                // Show FAB when user reaches the end of the article
+                int bottomReachedY = v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight();
+                if (scrollY == bottomReachedY) {
+                    fab.show();
+                }
             }
         });
 
