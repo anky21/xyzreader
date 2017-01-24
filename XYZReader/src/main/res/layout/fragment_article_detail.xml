@@ -65,13 +65,15 @@
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
         <com.example.xyzreader.ui.MaxWidthLinearLayout
+            android:id="@+id/linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/text_or_icons"
             android:elevation="@dimen/linear_layout_elevation"
             android:maxWidth="@dimen/detail_card_max_width"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:transitionGroup="true">
 
             <LinearLayout
                 android:id="@+id/meta_bar"

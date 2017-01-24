@@ -11,7 +11,7 @@
     </fade>
     <slide android:slideEdge="bottom">
         <targets>
-            <target android:targetId="@id/scrollview" />
+            <target android:targetId="@id/linear_layout" />
         </targets>
     </slide>
 </transitionSet>

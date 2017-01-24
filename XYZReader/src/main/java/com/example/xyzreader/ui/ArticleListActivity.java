@@ -163,6 +163,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra(STARTING_ARTICLE_POSITION, mPosition);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String abc = getString(R.string.detail_image_transition_name) + mPosition;
                     Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                             ArticleListActivity.this, new Pair<View, String>(vh.thumbnailView, getString(R.string.detail_image_transition_name) + mPosition)).toBundle();
                     ActivityCompat.startActivity(getApplicationContext(), intent, bundle);
