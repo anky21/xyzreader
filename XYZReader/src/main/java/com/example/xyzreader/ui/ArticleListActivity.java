@@ -11,6 +11,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +37,7 @@ import com.squareup.picasso.Picasso;
  */
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        SwipeRefreshLayout.OnRefreshListener{
+        SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -159,7 +162,10 @@ public class ArticleListActivity extends AppCompatActivity implements
                     Intent intent = new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra(STARTING_ARTICLE_POSITION, mPosition);
-                    startActivity(intent);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            ArticleListActivity.this, new Pair<View, String>(vh.thumbnailView, getString(R.string.detail_image_transition_name) + mPosition)).toBundle();
+                    ActivityCompat.startActivity(getApplicationContext(), intent, bundle);
                 }
             });
             return vh;

@@ -12,10 +12,20 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="ExpandedToolbarTitle" parent="@style/TextAppearance.AppCompat.Headline">
+    <style name="ExpandedToolbarTitle" parent="@style/TextAppearance.AppCompat.Headline"></style>
+
+    <style name="CollapsedToolbarTitle" parent="@style/TextAppearance.AppCompat.Title"></style>
+
+    <style name="AppTheme.Main" parent="@style/Theme.Bacon">
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <style name="CollapsedToolbarTitle" parent="@style/TextAppearance.AppCompat.Title">
+    <style name="AppTheme.Details" parent="@style/Theme.Bacon">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/details_window_enter_transition
+        </item>
+        <item name="android:windowReturnTransition">@transition/details_window_exit_transition
+        </item>
     </style>
 
 </resources>
