@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +52,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int mMutedColor = 0xFF333333;
     private NestedScrollView mScrollView;
     private ColorDrawable mStatusBarColorDrawable;
+    private FloatingActionButton fab;
 
     private int mTopInset;
     private ImageView mPhotoView;
@@ -122,7 +124,20 @@ public class ArticleDetailFragment extends Fragment implements
         collapsingToolbar =
                 (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar_layout);
 
+        fab = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
+
         mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
+        // Auto hide and display floating action button when scrolling
+        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    fab.hide();
+                } else if (scrollY < oldScrollY) {
+                    fab.show();
+                }
+            }
+        });
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
 
