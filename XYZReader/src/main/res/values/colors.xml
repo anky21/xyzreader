@@ -12,5 +12,8 @@
     <color name="secondary_text">#757575</color>
     <color name="divider_colour">#BDBDBD</color>
     <color name="text_or_icons">#FFFFFF</color>
+    <color name="transparent_background">#00000000</color>
+    <color name="linear_layout_background">#333</color>
+    <color name="date_color">#8fff</color>
 
 </resources>
