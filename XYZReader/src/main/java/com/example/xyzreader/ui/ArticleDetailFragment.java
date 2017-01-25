@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -24,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -214,6 +216,19 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         bindViews();
+
+
+        mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                // Start the postponed transition
+//                AppCompatActivity activity = (AppCompatActivity)getActivity();
+//                activity.supportStartPostponedEnterTransition(); // API < 21
+                ActivityCompat.startPostponedEnterTransition(getActivity()); // API > 21
+                return true;
+            }
+        });
     }
 
     @Override
