@@ -108,7 +108,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter = new MyPagerAdapter(getFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
-        mPager.setCurrentItem(mCurrentPosition);
+//        mPager.setCurrentItem(mCurrentPosition);
         mPager.setPageMargin((int) TypedValue
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
         mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
@@ -159,13 +159,13 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter.notifyDataSetChanged();
 
         // Select the start ID
-//        if (mStartId > 0) {
-//            Intent intent = getIntent();
-//            if(intent.hasExtra(ArticleListActivity.STARTING_ARTICLE_POSITION)){
-//                mPosition = intent.getIntExtra(ArticleListActivity.STARTING_ARTICLE_POSITION, 0);
-//                mPager.setCurrentItem(mPosition, false);
-//            }
-//        }
+        if (mStartId > 0) {
+            Intent intent = getIntent();
+            if(intent.hasExtra(ArticleListActivity.STARTING_ARTICLE_POSITION)){
+                mCurrentPosition = intent.getIntExtra(ArticleListActivity.STARTING_ARTICLE_POSITION, 0);
+                mPager.setCurrentItem(mCurrentPosition, false);
+            }
+        }
     }
 
     @Override
