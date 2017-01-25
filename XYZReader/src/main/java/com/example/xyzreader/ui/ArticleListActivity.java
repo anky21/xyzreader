@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,9 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -164,9 +162,14 @@ public class ArticleListActivity extends AppCompatActivity implements
                     intent.putExtra(STARTING_ARTICLE_POSITION, mPosition);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     String abc = getString(R.string.detail_image_transition_name) + mPosition;
-                    Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            ArticleListActivity.this, new Pair<View, String>(vh.thumbnailView, getString(R.string.detail_image_transition_name) + mPosition)).toBundle();
-                    ActivityCompat.startActivity(getApplicationContext(), intent, bundle);
+//                    Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                            ArticleListActivity.this, new Pair<View, String>(vh.thumbnailView, getString(R.string.detail_image_transition_name) + mPosition)).toBundle();
+//                    ActivityCompat.startActivity(getApplicationContext(), intent, bundle);
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                            ArticleListActivity.this,
+                            vh.thumbnailView,
+                            getString(R.string.detail_image_transition_name) + mPosition).toBundle();
+                    startActivity(intent,bundle);
                 }
             });
             return vh;
