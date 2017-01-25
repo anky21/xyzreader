@@ -52,6 +52,8 @@ public class ArticleDetailFragment extends Fragment implements
     private int mMutedColor = 0xFF333333;
     private NestedScrollView mScrollView;
     private ColorDrawable mStatusBarColorDrawable;
+    private static final String ARTICLE_POSITION = "article_position";
+    private int mCurrentPosition;
     private int mPosition;
 
     private int mTopInset;
@@ -68,9 +70,10 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(long itemId, int position) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
+        arguments.putInt(ARTICLE_POSITION, position);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -82,6 +85,9 @@ public class ArticleDetailFragment extends Fragment implements
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
+        }
+        if(getArguments().containsKey(ARTICLE_POSITION)){
+            mCurrentPosition = getArguments().getInt(ARTICLE_POSITION);
         }
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
@@ -176,7 +182,8 @@ public class ArticleDetailFragment extends Fragment implements
             String urlString = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
             loadBitmap(urlString);  // Load Bitmap using Picasso
 //            mPhotoView.setTransitionName(getString(R.string.detail_image_transition_name) + String.valueOf(mPosition));
-            String transitionName = getString(R.string.detail_image_transition_name) + String.valueOf(mPosition);
+            String transitionName = getString(R.string.detail_image_transition_name) + String.valueOf(mCurrentPosition);
+            Log.v("transition", "transition name is " + transitionName);
             ViewCompat.setTransitionName(mPhotoView, transitionName);
         } else {
             mRootView.setVisibility(View.GONE);
