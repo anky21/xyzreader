@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -32,6 +34,7 @@ import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -45,6 +48,8 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
+    private static final String ARG_ARTICLE_IMAGE_POSITION = "arg_article_image_position";
+    private static final String ARG_STARTING_ARTICLE_IMAGE_POSITION = "arg_starting_article_image_position";
 
     private CollapsingToolbarLayout collapsingToolbar;
     private Toolbar toolbar;
@@ -54,16 +59,28 @@ public class ArticleDetailFragment extends Fragment implements
     private int mMutedColor = 0xFF333333;
     private NestedScrollView mScrollView;
     private ColorDrawable mStatusBarColorDrawable;
-    private static final String ARTICLE_POSITION = "article_position";
-    private int mCurrentPosition;
-    private int mPosition;
 
-    private int mTopInset;
     private ImageView mPhotoView;
+    private int mStartingPosition;
+    private int mArticlePosition;
+    private boolean mIsTransitioning;
+    private long mBackgroundImageFadeMillis;
     private Target loadTarget;
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
+
+    private final Callback mImageCallback = new Callback() {
+        @Override
+        public void onSuccess() {
+            startPostponedEnterTransition();
+        }
+
+        @Override
+        public void onError() {
+            startPostponedEnterTransition();
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -72,10 +89,11 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId, int position) {
+    public static ArticleDetailFragment newInstance(long itemId, int position, int startingPosition) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
-        arguments.putInt(ARTICLE_POSITION, position);
+        arguments.putInt(ARG_ARTICLE_IMAGE_POSITION, position);
+        arguments.putInt(ARG_STARTING_ARTICLE_IMAGE_POSITION, startingPosition);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -88,18 +106,17 @@ public class ArticleDetailFragment extends Fragment implements
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
-        if(getArguments().containsKey(ARTICLE_POSITION)){
-            mCurrentPosition = getArguments().getInt(ARTICLE_POSITION);
-        }
+
+        mStartingPosition = getArguments().getInt(ARG_STARTING_ARTICLE_IMAGE_POSITION);
+        mArticlePosition = getArguments().getInt(ARG_ARTICLE_IMAGE_POSITION);
+        mIsTransitioning = savedInstanceState == null && mStartingPosition == mArticlePosition;
+//        mBackgroundImageFadeMillis = getResources().getInteger(
+//                R.integer.fragment_details_background_image_fade_millis);  // May be deleted later
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
         mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
                 R.dimen.detail_card_top_margin);
         setHasOptionsMenu(true);
-    }
-
-    public ArticleDetailActivity getActivityCast() {
-        return (ArticleDetailActivity) getActivity();
     }
 
     @Override
@@ -117,11 +134,6 @@ public class ArticleDetailFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
-
-        Intent intent = getActivity().getIntent();
-        if (intent.hasExtra(ArticleListActivity.STARTING_ARTICLE_POSITION)) {
-            mPosition = intent.getIntExtra(ArticleListActivity.STARTING_ARTICLE_POSITION, 0);
-        }
 
         toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar_1);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -154,7 +166,42 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+
         return mRootView;
+    }
+
+    private void startPostponedEnterTransition() {
+        if (mArticlePosition == mStartingPosition) {
+            mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().startPostponedEnterTransition();
+                    return true;
+                }
+            });
+        }
+    }
+
+    /**
+     * Returns the shared element that should be transitioned back to the previous Activity,
+     * or null if the view is not visible on the screen.
+     */
+    @Nullable
+    ImageView getArticleImage() {
+        if (isViewInBounds(getActivity().getWindow().getDecorView(), mPhotoView)) {
+            return mPhotoView;
+        }
+        return null;
+    }
+
+    /**
+     * Returns true if {@param view} is contained within {@param container}'s bounds.
+     */
+    private static boolean isViewInBounds(@NonNull View container, @NonNull View view) {
+        Rect containerBounds = new Rect();
+        container.getHitRect(containerBounds);
+        return view.getLocalVisibleRect(containerBounds);
     }
 
     private void bindViews() {
@@ -183,8 +230,7 @@ public class ArticleDetailFragment extends Fragment implements
 
             String urlString = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
             loadBitmap(urlString);  // Load Bitmap using Picasso
-//            mPhotoView.setTransitionName(getString(R.string.detail_image_transition_name) + String.valueOf(mPosition));
-            String transitionName = getString(R.string.detail_image_transition_name) + String.valueOf(mCurrentPosition);
+            String transitionName = getString(R.string.detail_image_transition_name) + String.valueOf(mArticlePosition);
             Log.v("transition", "transition name is " + transitionName);
             ViewCompat.setTransitionName(mPhotoView, transitionName);
         } else {
@@ -217,18 +263,17 @@ public class ArticleDetailFragment extends Fragment implements
 
         bindViews();
 
-
-        mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
-                // Start the postponed transition
-//                AppCompatActivity activity = (AppCompatActivity)getActivity();
-//                activity.supportStartPostponedEnterTransition(); // API < 21
-                ActivityCompat.startPostponedEnterTransition(getActivity()); // API > 21
-                return true;
-            }
-        });
+//        mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
+//                // Start the postponed transition
+////                AppCompatActivity activity = (AppCompatActivity)getActivity();
+////                activity.supportStartPostponedEnterTransition(); // API < 21
+//                ActivityCompat.startPostponedEnterTransition(getActivity()); // API > 21
+//                return true;
+//            }
+//        });
     }
 
     @Override
@@ -253,12 +298,14 @@ public class ArticleDetailFragment extends Fragment implements
         if (loadTarget == null) loadTarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                startPostponedEnterTransition();
                 if (bitmap != null) {
                     Palette p = Palette.generate(bitmap, 12);
                     mMutedColor = p.getDarkMutedColor(0xFF333333);
                     mPhotoView.setImageBitmap(bitmap);
                     mRootView.findViewById(R.id.meta_bar)
                             .setBackgroundColor(mMutedColor);
+
                 }
             }
 
