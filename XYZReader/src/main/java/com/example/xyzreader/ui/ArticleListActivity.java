@@ -231,8 +231,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                             ArticleListActivity.this,
                             vh.thumbnailView,
                             vh.thumbnailView.getTransitionName()).toBundle();
-                    vh.thumbnailView.setTag(getString(R.string.detail_image_transition_name) + mArticlePosition);
-                    startActivity(intent,bundle);
+                    startActivity(intent, bundle);
                 }
             });
             return vh;

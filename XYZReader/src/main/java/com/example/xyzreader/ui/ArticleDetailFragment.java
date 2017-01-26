@@ -7,7 +7,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -57,17 +56,11 @@ public class ArticleDetailFragment extends Fragment implements
     private View mRootView;
     private int mMutedColor = 0xFF333333;
     private NestedScrollView mScrollView;
-    private ColorDrawable mStatusBarColorDrawable;
 
     private ImageView mPhotoView;
     private int mStartingPosition;
     private int mArticlePosition;
-    private boolean mIsTransitioning;
-    private long mBackgroundImageFadeMillis;
     private Target loadTarget;
-    private int mScrollY;
-    private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -96,11 +89,6 @@ public class ArticleDetailFragment extends Fragment implements
 
         mStartingPosition = getArguments().getInt(ARG_STARTING_ARTICLE_IMAGE_POSITION);
         mArticlePosition = getArguments().getInt(ARG_ARTICLE_IMAGE_POSITION);
-        mIsTransitioning = savedInstanceState == null && mStartingPosition == mArticlePosition;
-
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
-        mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
-                R.dimen.detail_card_top_margin);
         setHasOptionsMenu(true);
     }
 
@@ -138,8 +126,6 @@ public class ArticleDetailFragment extends Fragment implements
         mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
-
-        mStatusBarColorDrawable = new ColorDrawable(0);
 
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +200,6 @@ public class ArticleDetailFragment extends Fragment implements
             String urlString = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
             loadBitmap(urlString);  // Load Bitmap using Picasso
             String transitionName = getString(R.string.detail_image_transition_name) + String.valueOf(mArticlePosition);
-            Log.v("transition", "transition name is " + transitionName);
             ViewCompat.setTransitionName(mPhotoView, transitionName);
         } else {
             mRootView.setVisibility(View.GONE);

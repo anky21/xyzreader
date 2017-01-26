@@ -22,12 +22,11 @@ import android.widget.ImageView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.example.xyzreader.ui.ArticleListActivity.*;
+import static com.example.xyzreader.ui.ArticleListActivity.CURRENT_ARTICLE_POSITION;
 import static com.example.xyzreader.ui.ArticleListActivity.STARTING_ARTICLE_POSITION;
 
 /**
@@ -35,16 +34,8 @@ import static com.example.xyzreader.ui.ArticleListActivity.STARTING_ARTICLE_POSI
  */
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
-    public final static String ARTICLE_ID = "article_id";
 
     private Cursor mCursor;
-    private long mStartId;
-
-    private long mSelectedItemId;
-    private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;
-    private int mTopInset;
-    private int mPosition;
-
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
 
@@ -94,10 +85,6 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         mStartingPosition = getIntent().getIntExtra(STARTING_ARTICLE_POSITION, 0);
         if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
-                mSelectedItemId = mStartId;
-            }
             mCurrentPosition = mStartingPosition;
         } else {
             mCurrentPosition = savedInstanceState.getInt(STATE_CURRENT_PAGE_POSITION);
@@ -112,38 +99,20 @@ public class ArticleDetailActivity extends AppCompatActivity
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
         mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
 
-//        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//                super.onPageScrollStateChanged(state);
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                if (mCursor != null) {
-//                    mCursor.moveToPosition(position);
-//                }
-//                mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-//            }
-//        });
-
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
                 }
-                mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
                 mCurrentPosition = position;
             }
         });
-
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(ARTICLE_ID, mStartId);
         outState.putInt(STATE_CURRENT_PAGE_POSITION, mCurrentPosition);
     }
 
@@ -156,14 +125,10 @@ public class ArticleDetailActivity extends AppCompatActivity
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mCursor = cursor;
         mPagerAdapter.notifyDataSetChanged();
-
-        // Select the start ID
-        if (mStartId > 0) {
-            Intent intent = getIntent();
-            if(intent.hasExtra(ArticleListActivity.STARTING_ARTICLE_POSITION)){
-                mCurrentPosition = intent.getIntExtra(ArticleListActivity.STARTING_ARTICLE_POSITION, 0);
-                mPager.setCurrentItem(mCurrentPosition, false);
-            }
+        Intent intent = getIntent();
+        if (intent.hasExtra(ArticleListActivity.STARTING_ARTICLE_POSITION)) {
+            mCurrentPosition = intent.getIntExtra(ArticleListActivity.STARTING_ARTICLE_POSITION, 0);
+            mPager.setCurrentItem(mCurrentPosition, false);
         }
     }
 
@@ -203,5 +168,6 @@ public class ArticleDetailActivity extends AppCompatActivity
         data.putExtra(STARTING_ARTICLE_POSITION, mStartingPosition);
         data.putExtra(CURRENT_ARTICLE_POSITION, mCurrentPosition);
         setResult(RESULT_OK, data);
-        super.finishAfterTransition();    }
+        super.finishAfterTransition();
+    }
 }
