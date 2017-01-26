@@ -10,4 +10,7 @@
     <string name="up">Up</string>
     <string name="network_down_message">Please refresh later when network is available. </string>
 
+    <!-- For Shared Element Transitions -->
+    <string name="detail_image_transition_name" translatable="false">detail_image_animation</string>
+
 </resources>
