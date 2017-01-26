@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -56,6 +57,7 @@ public class ArticleDetailFragment extends Fragment implements
     private View mRootView;
     private int mMutedColor = 0xFF333333;
     private NestedScrollView mScrollView;
+    private FloatingActionButton fab;
 
     private ImageView mPhotoView;
     private int mStartingPosition;
@@ -123,8 +125,27 @@ public class ArticleDetailFragment extends Fragment implements
         collapsingToolbar =
                 (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar_layout);
 
-        mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
+        fab = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
 
+        mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
+        // Auto hide and display floating action button when scrolling
+        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    fab.hide();
+                } else if (scrollY < oldScrollY) {
+                    fab.show();
+                }
+                // Show FAB when user reaches the end of the article
+                int bottomReachedY = v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight();
+                if (scrollY == bottomReachedY) {
+                    fab.show();
+                }
+            }
+        });
+
+        mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
 
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
