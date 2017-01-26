@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -70,18 +69,6 @@ public class ArticleDetailFragment extends Fragment implements
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
 
-    private final Callback mImageCallback = new Callback() {
-        @Override
-        public void onSuccess() {
-            startPostponedEnterTransition();
-        }
-
-        @Override
-        public void onError() {
-            startPostponedEnterTransition();
-        }
-    };
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -110,8 +97,6 @@ public class ArticleDetailFragment extends Fragment implements
         mStartingPosition = getArguments().getInt(ARG_STARTING_ARTICLE_IMAGE_POSITION);
         mArticlePosition = getArguments().getInt(ARG_ARTICLE_IMAGE_POSITION);
         mIsTransitioning = savedInstanceState == null && mStartingPosition == mArticlePosition;
-//        mBackgroundImageFadeMillis = getResources().getInteger(
-//                R.integer.fragment_details_background_image_fade_millis);  // May be deleted later
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
         mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
@@ -165,8 +150,6 @@ public class ArticleDetailFragment extends Fragment implements
                         .getIntent(), getString(R.string.action_share)));
             }
         });
-
-
         return mRootView;
     }
 
@@ -262,18 +245,6 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         bindViews();
-
-//        mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//            @Override
-//            public boolean onPreDraw() {
-//                mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
-//                // Start the postponed transition
-////                AppCompatActivity activity = (AppCompatActivity)getActivity();
-////                activity.supportStartPostponedEnterTransition(); // API < 21
-//                ActivityCompat.startPostponedEnterTransition(getActivity()); // API > 21
-//                return true;
-//            }
-//        });
     }
 
     @Override

@@ -39,8 +39,7 @@ import java.util.Map;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>,
-        SwipeRefreshLayout.OnRefreshListener {
+        LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -59,7 +58,6 @@ public class ArticleListActivity extends AppCompatActivity implements
                     // If startingPosition != currentPosition the user must have swiped to a
                     // different page in the DetailsActivity. We must update the shared element
                     // so that the correct one falls into place.
-//                    String newTransitionName = ALBUM_NAMES[currentPosition];
                     String newTransitionName = getString(R.string.detail_image_transition_name) + currentPosition;
                     View newSharedElement = mRecyclerView.findViewWithTag(newTransitionName);
                     if (newSharedElement != null) {
@@ -213,7 +211,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public long getItemId(int position) {
             mCursor.moveToPosition(position);
-            mArticlePosition = position;
             return mCursor.getLong(ArticleLoader.Query._ID);
         }
 
@@ -224,6 +221,8 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    mArticlePosition = vh.getAdapterPosition();
+
                     Intent intent = new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra(STARTING_ARTICLE_POSITION, mArticlePosition);
@@ -231,7 +230,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                             ArticleListActivity.this,
                             vh.thumbnailView,
-                            getString(R.string.detail_image_transition_name) + mArticlePosition).toBundle();
+                            vh.thumbnailView.getTransitionName()).toBundle();
                     vh.thumbnailView.setTag(getString(R.string.detail_image_transition_name) + mArticlePosition);
                     startActivity(intent,bundle);
                 }
@@ -242,6 +241,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
+            mArticlePosition = position;
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             holder.subtitleView.setText(
                     DateUtils.getRelativeTimeSpanString(
@@ -255,6 +255,8 @@ public class ArticleListActivity extends AppCompatActivity implements
                     .load(urlString)
                     .error(R.drawable.errorstop)
                     .into(holder.thumbnailView);
+            holder.thumbnailView.setTransitionName(getString(R.string.detail_image_transition_name) + mArticlePosition);
+            holder.thumbnailView.setTag(getString(R.string.detail_image_transition_name) + mArticlePosition);
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
         }
 
