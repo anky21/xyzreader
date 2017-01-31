@@ -8,7 +8,6 @@ Major Material Design Features
 - ViewPager, AppBarLayout, Collapsing toolbar
 - Surface, Elevation, SnackBar and Floating Action Button (FAB)
 - Customised FAB behaviour
-- Android SDK v25
 - Palette, Background Protection
 - Activity content transitions and Shared element transitions
 
